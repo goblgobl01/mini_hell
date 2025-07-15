@@ -6,7 +6,7 @@
 /*   By: mboutahi <mboutahi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 10:55:24 by mboutahi          #+#    #+#             */
-/*   Updated: 2025/07/14 16:18:18 by mboutahi         ###   ########.fr       */
+/*   Updated: 2025/07/13 17:56:22 by mboutahi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,14 +110,10 @@ char *ft_get_env_value(char *name, t_env_copy *env)
 
 	j = 0;
 	i = 0;
-	// if(isnumber(s[0]))
-	// 		break ;
 	while(s[i] && s[i] != ' ' && s[i]!= '$' && (ft_isalnum(s[i]) || s[i] == '_' || s[i] == '?')) // stops at not aphanum or underscore or question mark
 	{
 		i++;
 		if(s[i - 1] == '?')
-			break ;
-		if(isnumber(s[i - 1]))
 			break ;
 	}
 	if( i != 0)
@@ -176,7 +172,7 @@ char *ft_expand(char *s, t_env_copy *env)
 			var_name = get_var(s + (i + 1));
 			if (!ft_get_env_value(var_name, env))
 			{
-		   		tmp = ft_strjoin(tmp, ft_strdup(""));
+		   		tmp = ft_strjoin(tmp, ft_strdup(" "));
 				s = ft_strjoin(tmp, ft_substr(s + i + 1 + ft_strlen(var_name) , 0, ft_strlen(s)));
 			}
 			else

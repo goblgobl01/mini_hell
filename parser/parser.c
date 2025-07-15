@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mmaarafi <mmaarafi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/27 10:30:55 by mboutahi          #+#    #+#             */
+/*   Updated: 2025/07/14 10:45:58 by mmaarafi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../header.h"
 int cmd_counter(t_tokens *p)
 {
@@ -11,17 +23,6 @@ int cmd_counter(t_tokens *p)
 		p = p->next;
 	}
 	return (i);
-}
-int find_expand(char *str)
-{
-	int i;
-
-	i = 0;
-	while (str[i] && (str[i] == '\'' || str[i] == '\"'))
-		i++;
-	if (str[i] == '$')
-		return 1;
-	return 0;
 }
 
 t_command **cmd_allocation(t_tokens *tokens)
@@ -103,6 +104,7 @@ void ft_parser(t_tokens *tokens, t_env_copy *p)
 	char **file;
 	char **arguments;
 	int arguments_flag;
+	// t_tokens *tmps = tokens;
 
 	k = 0;
 	i = 0;
@@ -127,37 +129,30 @@ void ft_parser(t_tokens *tokens, t_env_copy *p)
 				if (tokens->next)
 				{
 					arguments_flag = 1;
-					arguments = ft_split_args_file_qoute(tokens->next->value);
+					arguments = ft_split_args_file(tokens->next->value);
 					cmd[j]->redirctions[k]->file = ft_strdup(arguments[0]);
-					if (find_expand(arguments[0]))
+					if (arguments[0][0] == '$')
 					{
 						cmd[j]->redirctions[k]->file = ft_expand(arguments[0], p);
 						file = ft_split_args(cmd[j]->redirctions[k]->file, p);
 						// printf("%s", file);
-						if (file[1] || !file[0])
+						if (file[1])
 						{
 							write(2, "ambiguous redirect\n", 20);
 							update_environment(p, "?", "1");
 						}
-						else
-							cmd[j]->redirctions[k]->file = file[0];
 					}
-					else
-						cmd[j]->redirctions[k]->file = skip_qoute(cmd[j]->redirctions[k]->file);
-					if (arguments[1])
+					while(arguments[arguments_flag])
 					{
-						while (arguments[arguments_flag])
+						if (cmd[j]->args[0] == NULL)
 						{
-							if (cmd[j]->args[0] == NULL)
-							{
-								cmd[j]->args[0] = ft_strdup(arguments[arguments_flag]);
-								arguments_flag++;
-								continue;
-							}
-							cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], " ");
-							cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], arguments[arguments_flag]);
+							cmd[j]->args[0] = ft_strdup(arguments[arguments_flag]);
 							arguments_flag++;
+							continue ;
 						}
+						cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], " ");
+						cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], arguments[arguments_flag]);
+						arguments_flag++;
 					}
 				}
 				tokens = tokens->next;
@@ -169,38 +164,29 @@ void ft_parser(t_tokens *tokens, t_env_copy *p)
 				if (tokens->next)
 				{
 					arguments_flag = 1;
-					arguments = ft_split_args_file_qoute(tokens->next->value);
+					arguments = ft_split_args_file(tokens->next->value);
 					cmd[j]->redirctions[k]->file = ft_strdup(arguments[0]);
-					if (find_expand(arguments[0]))
+					if (arguments[0][0] == '$')
 					{
-						cmd[j]->redirctions[k]->file = ft_expand(arguments[0], p);
-						// skip_qoute(cmd[j]->redirctions[k]->file);                    // to handle!!!!!!!!!
+						cmd[j]->redirctions[k]->file = ft_expand(arguments[0], p); // to handle!!!!!!!!!
 						file = ft_split_args(cmd[j]->redirctions[k]->file, p);
-						if (file[1] || !file[0])
+						if (file[1])
 						{
-							write(2, "bash: ambiguous redirect\n", 26);
+							write(2, "ambiguous redirect\n", 20);
 							update_environment(p, "?", "1");
 						}
-						else
-							cmd[j]->redirctions[k]->file = file[0];
 					}
-					else
-						cmd[j]->redirctions[k]->file = skip_qoute(cmd[j]->redirctions[k]->file);
-
-					if (arguments[1])
+					while(arguments[arguments_flag])
 					{
-						while (arguments[arguments_flag])
+						if (cmd[j]->args[0] == NULL)
 						{
-							if (cmd[j]->args[0] == NULL)
-							{
-								cmd[j]->args[0] = ft_strdup(arguments[arguments_flag]);
-								arguments_flag++;
-								continue;
-							}
-							cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], " ");
-							cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], arguments[arguments_flag]);
+							cmd[j]->args[0] = ft_strdup(arguments[arguments_flag]);
 							arguments_flag++;
+							continue ;
 						}
+						cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], " ");
+						cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], arguments[arguments_flag]);
+						arguments_flag++;
 					}
 				}
 				tokens = tokens->next;
@@ -218,20 +204,17 @@ void ft_parser(t_tokens *tokens, t_env_copy *p)
 					tokens = tokens->next;
 					k++;
 				}
-				if (arguments[1])
+				while(arguments[arguments_flag])
 				{
-					while (arguments[arguments_flag])
+					if (cmd[j]->args[0] == NULL)
 					{
-						if (cmd[j]->args[0] == NULL)
-						{
-							cmd[j]->args[0] = ft_strdup(arguments[arguments_flag]);
-							arguments_flag++;
-							continue;
-						}
-						cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], " ");
-						cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], arguments[arguments_flag]);
+						cmd[j]->args[0] = ft_strdup(arguments[arguments_flag]);
 						arguments_flag++;
+						continue ;
 					}
+					cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], " ");
+					cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], arguments[arguments_flag]);
+					arguments_flag++;
 				}
 			}
 			else if (tokens->type == TOKEN_APPEND_OUT)
@@ -240,37 +223,30 @@ void ft_parser(t_tokens *tokens, t_env_copy *p)
 				if (tokens->next)
 				{
 					arguments_flag = 1;
-					arguments = ft_split_args_file_qoute(tokens->next->value);
+					arguments = ft_split_args_file(tokens->next->value);
 					cmd[j]->redirctions[k]->file = ft_strdup(arguments[0]);
-					if (find_expand(arguments[0]))
+					if (arguments[0][0] == '$')
 					{
 						cmd[j]->redirctions[k]->file = ft_expand(arguments[0], p);
-						file = ft_split_args_file(cmd[j]->redirctions[k]->file);
+						file = ft_split_args(cmd[j]->redirctions[k]->file, p);
 						// printf("%s", file);
-						if (file[1] || !file[0])
+						if (file[1])
 						{
 							printf("bash: : ambiguous redirect\n");
 							update_environment(p, "?", "1");
 						}
-						else
-							cmd[j]->redirctions[k]->file = file[0];
 					}
-					else
-						cmd[j]->redirctions[k]->file = skip_qoute(cmd[j]->redirctions[k]->file);
-					if (arguments[1])
+					while(arguments[arguments_flag])
 					{
-						while (arguments[arguments_flag])
+						if (cmd[j]->args[0] == NULL)
 						{
-							if (cmd[j]->args[0] == NULL)
-							{
-								cmd[j]->args[0] = ft_strdup(arguments[arguments_flag]);
-								arguments_flag++;
-								continue;
-							}
-							cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], " ");
-							cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], arguments[arguments_flag]);
+							cmd[j]->args[0] = ft_strdup(arguments[arguments_flag]);
 							arguments_flag++;
+							continue ;
 						}
+						cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], " ");
+						cmd[j]->args[0] = ft_strjoin(cmd[j]->args[0], arguments[arguments_flag]);
+						arguments_flag++;
 					}
 				}
 				tokens = tokens->next;
@@ -282,7 +258,7 @@ void ft_parser(t_tokens *tokens, t_env_copy *p)
 		{
 			// if (cmd[j]->args[0])
 			// {
-			cmd[j]->args = ft_split_args(cmd[j]->args[0], p);
+				cmd[j]->args = ft_split_args(cmd[j]->args[0], p);
 			// }
 			// char **s = cmd[j]->args;
 			// int x = 0;
@@ -308,12 +284,11 @@ void ft_parser(t_tokens *tokens, t_env_copy *p)
 	}
 	// if(check_herdoc(tmps))
 	// {
-	if (heredoc(cmd, p))
-		exec_command(cmd, p);
+		if (heredoc(cmd, p))
+			exec_command(cmd, p);
 	// }
 	// else
 	// 	exec_command(cmd, p);
-
 	// while (cmd[k] && cmd[k]->args)
 	// {
 	// 		printf("Command %s:\n", cmd[k]->args[i]);
@@ -322,15 +297,16 @@ void ft_parser(t_tokens *tokens, t_env_copy *p)
 	// 	 i = 0;
 	// 	while ( cmd[k]->args[i])
 	// 	{
-	// printf("  arg[%d] -> |%s|\n", i, cmd[0]->args[0]);
+			// printf("  arg[%d] -> |%s|\n", i, cmd[0]->args[0]);
 	// 		i++;
 	// 	}
 	// 	k++;
 	// }
-	// exit(1);
+		// exit(1);
+
 
 	// int x = 0;
-	i = 0;
+				 i = 0;
 
 	// 	// Print redirections
 	// 	x = 0;

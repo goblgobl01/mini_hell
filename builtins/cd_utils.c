@@ -1,18 +1,7 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   cd_utils.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mboutahi <mboutahi@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/15 02:21:15 by mboutahi          #+#    #+#             */
-/*   Updated: 2025/07/15 02:21:49 by mboutahi         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "../header.h"
 
-t_env_copy	*new_node_pwd(char *name, char *value)
+t_env_copy *new_node_pwd(char *name, char *value)
 {
 	t_env_copy	*tokens;
 
@@ -25,7 +14,7 @@ t_env_copy	*new_node_pwd(char *name, char *value)
 	return (tokens);
 }
 
-void	add_to_list_pwd(t_env_copy *env, char *name, char *value)
+void    add_to_list_pwd(t_env_copy *env,char *name, char *value)
 {
 	t_env_copy	*element;
 	t_env_copy	*temp;
@@ -34,7 +23,9 @@ void	add_to_list_pwd(t_env_copy *env, char *name, char *value)
 	if (!element)
 		exit(1);
 	if ((env) == NULL)
+	{
 		(env) = element;
+	}
 	else
 	{
 		temp = env;

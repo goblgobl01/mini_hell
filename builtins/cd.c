@@ -50,11 +50,10 @@ char *get_home_direc(t_env_copy *env)
 void ft_cd(t_command **cmd, t_env_copy *env)
 {
 
-	char	new_cwd[MAX_PATH];
-	char	*old_cwd;
-	char	*target;
-	struct	stat check;
-
+	char new_cwd[MAX_PATH];
+	char *old_cwd;
+	char *target;
+	struct stat check;
 	if (!(cmd[0]->args[1]))
 	{
 		target = get_home_direc(env);
@@ -70,6 +69,12 @@ void ft_cd(t_command **cmd, t_env_copy *env)
 			return;
 		}
 	}
+	// else if ((cmd[0]->args[2]) != NULL)
+	// {
+	// 	fprintf(stderr, "bash: cd: too many arguments\n");
+	// 	update_environment(env, "?", "1");
+	// 	return;
+	// }
 	else
 		target = cmd[0]->args[1];
 	old_cwd = getcwd(NULL, 0);
@@ -77,7 +82,7 @@ void ft_cd(t_command **cmd, t_env_copy *env)
 	{
 		if (stat(cmd[0]->args[1], &check) == -1)
 		{
-			dprintf(2, "bash: cd: %s: %s\n", cmd[0]->args[1], strerror(errno)); // change to ft_putstr_fd
+			dprintf(2, "bash: cd: %s %s\n", cmd[0]->args[1], strerror(errno)); // change to ft_putstr_fd
 			update_environment(env, "?", "1");
 			return;
 		}
@@ -86,7 +91,8 @@ void ft_cd(t_command **cmd, t_env_copy *env)
 			perror("cd:");
 			update_environment(env, "?", "1");
 			return;
-		}          // free(command_path), command_path = NULL;
+		}
+		// free(command_path), command_path = NULL;
 	}
 	if (chdir(target) != 0)
 	{
@@ -100,11 +106,15 @@ void ft_cd(t_command **cmd, t_env_copy *env)
 		perror("bash: cd: getcwd failed");
 		free(old_cwd);
 		update_environment(env, "?", "1");
-		return ;
+		return;
 	}
 	if (update_env_pwd(new_cwd, env))
+	{
 		add_to_list_pwd(env, ft_strdup("PWD"), ft_strdup(new_cwd));
+	}
 	if (update_env_oldpwd(old_cwd, env))
+	{
 		add_to_list_pwd(env, ft_strdup("OLDPWD"), ft_strdup(old_cwd));
+	}
 	update_environment(env, "?", "0");
 }

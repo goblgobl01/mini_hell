@@ -63,10 +63,3 @@ unset TES$?T             ✅
 -----
 # export test="arg1	arg2"
 # echo "ls" | env -i $MINISHELL_PATH"/"$EXECUTABLE
-
-touch whatever                        ❌
-cat <"./whatever" >"./whatever"       ❌
-rm -rf whatever                       ❌
-
-ls >"./ with spaces"                  ❌
-rm -rf " with spaces"                 ❌
