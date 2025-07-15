@@ -68,19 +68,19 @@ void exec_command(t_command **cmd, t_env_copy *env)
 	prev_pipe = -1;
 	pids = 0;
 	// printf("  arg[%d] -> |%s|\n", i, cmd[0]->args[0]);
-if (cmd[0] && (!cmd[0]->args || !cmd[0]->args[0]) && 
-	(!cmd[0]->redirctions || !cmd[0]->redirctions[0]) &&
-    !cmd[1])
-    	return;
+	if (cmd[0] && (!cmd[0]->args || !cmd[0]->args[0]) &&
+		(!cmd[0]->redirctions || !cmd[0]->redirctions[0]) &&
+		!cmd[1])
+		return;
 	else if (cmd[0] && (!cmd[0]->args || (cmd[0]->args[0] && cmd[0]->args[0][0] == '\0')) &&
-		(!cmd[0]->redirctions || !cmd[0]->redirctions[0]) && !cmd[1])
+			 (!cmd[0]->redirctions || !cmd[0]->redirctions[0]) && !cmd[1])
 	{
 		dprintf(2, "bash: : command not found\n");
 		update_environment(env, "?", "127");
 		return;
 	}
 	else if (cmd[0] && (!cmd[0]->args || (cmd[0]->args[0] && cmd[0]->args[0][0] == '.' && cmd[0]->args[0][1] == '\0')) &&
-		(!cmd[0]->redirctions || !cmd[0]->redirctions[0]) && !cmd[1])
+			 (!cmd[0]->redirctions || !cmd[0]->redirctions[0]) && !cmd[1])
 	{
 		dprintf(2, "bash: %s: filename argument required\n", cmd[0]->args[0]);
 		dprintf(2, "%s: usage: %s: filename [arguments]\n", cmd[0]->args[0], cmd[0]->args[0]);
@@ -111,7 +111,7 @@ if (cmd[0] && (!cmd[0]->args || !cmd[0]->args[0]) &&
 			// if ((cmd[i]->args) && (cmd[i]->args[0]) && !is_builtin(cmd[i]->args[0]))
 			// {
 			// 	if (ft_strchr(cmd[i]->args[0], '/'))
-        	// 		command = ft_strdup(cmd[i]->args[0]); 
+			// 		command = ft_strdup(cmd[i]->args[0]);
 			// 	else
 			// 		command = check_valid_path(path, cmd[i]->args[0]);
 			// 	if (!command)
@@ -120,7 +120,6 @@ if (cmd[0] && (!cmd[0]->args || !cmd[0]->args[0]) &&
 			// 		update_environment(env, "?", "127");
 			// 		// return;
 			// 	}
-			// }
 			if (cmd[i + 1])
 				pipe(fd);
 			pid = fork();
@@ -142,25 +141,27 @@ if (cmd[0] && (!cmd[0]->args || !cmd[0]->args[0]) &&
 				}
 				if (cmd[i]->redirctions)
 				{
-						handle_redirection(cmd[i], env);
+					handle_redirection(cmd[i], env);
 				}
 				if ((!cmd[i]->args) || (!cmd[i]->args[0]))
 				{
 					exit(0);
 				}
 				if ((cmd[i]->args) && (cmd[i]->args[0]) && !is_builtin(cmd[i]->args[0]))
-			{
-				if (ft_strchr(cmd[i]->args[0], '/'))
-					command = ft_strdup(cmd[i]->args[0]); 
-				else
-					command = check_valid_path(path, cmd[i]->args[0]);
-				if (!command)
 				{
-					dprintf(2, "bash: %s: command not found\n", cmd[i]->args[0]);
-					update_environment(env, "?", "127");
-					exit(127);
+					if (ft_strchr(cmd[i]->args[0], '/'))
+					{
+							command = ft_strdup(cmd[i]->args[0]);
+					}
+					else
+						command = check_valid_path(path, cmd[i]->args[0]);
+					if (!command)
+					{
+						dprintf(2, "bash: %s: command not found\n", cmd[i]->args[0]);
+						update_environment(env, "?", "127");
+						exit(127);
+					}
 				}
-			}
 				if (ft_strcmp(cmd[i]->args[0], "export") == 0)
 				{
 					ft_export(cmd, env);
@@ -206,10 +207,18 @@ if (cmd[0] && (!cmd[0]->args || !cmd[0]->args[0]) &&
 					// }
 					if (execve(command, cmd[i]->args, envp) == -1)
 					{
-						if (errno == EISDIR)
+						struct stat dir;
+						stat(cmd[i]->args[0], &dir);
+						if (S_ISDIR(dir.st_mode) && ft_strchr(cmd[i]->args[0], '/'))
 							dprintf(2, "bash: %s: is a directory\n", cmd[i]->args[0]);
-						else 
-							dprintf(2,"bash: %s %s\n", cmd[i]->args[0], strerror(errno)); //change to ft_putstr_fd
+						else if (!ft_strcmp(cmd[i]->args[0], "..") && !ft_strchr(cmd[i]->args[0], '/'))
+						{
+							dprintf(2, "bash: %s: command not found\n", cmd[i]->args[0]);
+							update_environment(env, "?", "127");
+							exit(127);
+						}
+						else
+							dprintf(2, "bash: %s %s\n", cmd[i]->args[0], strerror(errno)); // change to ft_putstr_fd
 						if (errno == ENOENT)
 						{
 							update_environment(env, "?", "127");
@@ -246,7 +255,7 @@ if (cmd[0] && (!cmd[0]->args || !cmd[0]->args[0]) &&
 			while (wait(NULL) > 0)
 				;
 			signal(SIGINT, signal_handler);
-			if (i-1 >= 0 && cmd[i-1]->args && ft_strcmp(cmd[i-1]->args[0], "exit") == 0)
+			if (i - 1 >= 0 && cmd[i - 1]->args && ft_strcmp(cmd[i - 1]->args[0], "exit") == 0)
 			{
 				int code;
 				if (WIFEXITED(status))
@@ -273,8 +282,11 @@ if (cmd[0] && (!cmd[0]->args || !cmd[0]->args[0]) &&
 						update_environment(env, "?", ft_itoa(130));
 					if (WTERMSIG(status) == SIGQUIT)
 						update_environment(env, "?", ft_itoa(131));
-					if (WTERMSIG(status)==  SIGPIPE)
+					if (WTERMSIG(status) == SIGPIPE)
+					{
+						printf("im here\n");
 						update_environment(env, "?", ft_itoa(1));
+					}
 				}
 			}
 		}

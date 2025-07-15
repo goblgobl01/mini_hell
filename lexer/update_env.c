@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   update_env.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmaarafi <mmaarafi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboutahi <mboutahi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 10:40:54 by codespace         #+#    #+#             */
-/*   Updated: 2025/07/14 16:44:09 by mmaarafi         ###   ########.fr       */
+/*   Updated: 2025/07/07 12:03:35 by mboutahi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ t_env_copy	*find_key(t_env_copy *env, char *key)
 	}
 	return (NULL);
 }
-
 t_env_copy	*find_name(t_env_copy *env, char *key)
 {
 	while (env)
@@ -34,11 +33,12 @@ t_env_copy	*find_name(t_env_copy *env, char *key)
 	return (NULL);
 }
 
-void	update_environment(t_env_copy *env, char *key, char *new_value)
+void update_environment(t_env_copy *env, char *key, char *new_value)
 {
-	t_env_copy	*desired_env;
-	t_env_copy	*ptr;
+	t_env_copy *desired_env;
+	t_env_copy *ptr;
 
+	
 	desired_env = find_key(env, key);
 	if (desired_env)
 	{

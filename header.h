@@ -114,13 +114,10 @@ char		*skip_qoute(char *str);
 char		*check_valid_path(char *path, char *cmd);
 void		add_to_list_pwd(t_env_copy *env,char *name, char *value);
 t_env_copy	*new_node_pwd(char *name, char *value);
-// char    **ft_split_args_file_qoute(char *str);
-int			check_herdoc(t_tokens *tokens);
-char		*ft_expand_herdoc(char *s, t_env_copy *env);
-int			is_redirection_token(char *token);
-int	is_pipe_token(char *token);
-int	is_special_token(char *token);
-int	is_only_space(char *token);
-int	check_quotes(char *str);
-
+char		**ft_split_args_file_qoute(char *str);
+void		print_invalid_export_option(char *name, t_env_copy *env);
+void		print_export(t_env_copy *env);
+int			ft_isalnum_env(char *s);
+void		print_invalid_export_id(char *name, t_env_copy *env);
+void		export_args(t_env_copy *env, char *value, int j, char *args);
 #endif
