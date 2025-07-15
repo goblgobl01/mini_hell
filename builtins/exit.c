@@ -1,10 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mboutahi <mboutahi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/15 02:07:45 by mboutahi          #+#    #+#             */
+/*   Updated: 2025/07/15 02:38:23 by mboutahi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../header.h"
-#include <ctype.h>
 
-int count_length(char **var)
+int	count_length(char **var)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (var[i])
@@ -12,9 +22,9 @@ int count_length(char **var)
 	return (i);
 }
 
-int contain_char(char *str)
+int	contain_char(char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (str[i] == '+' || str[i] == '-')
@@ -28,9 +38,10 @@ int contain_char(char *str)
 	return (0);
 }
 
-int valid_argument(char **var)
+int	valid_argument(char **var)
 {
-	int length;
+	int	length;
+
 	length = count_length(var);
 	if (length == 0)
 		return (3);
@@ -41,35 +52,36 @@ int valid_argument(char **var)
 	return (2);
 }
 
-void ft_exit(char **arguments, t_env_copy *env)
+void	print_exiterr(char *str, t_env_copy *env)
 {
-	int flag;
-	unsigned char c;
+	ft_putstr_fd("bash: exit: ", 2);
+	ft_putstr_fd(str, 2);
+	ft_putstr_fd(": numeric argument required\n", 2);
+	update_environment(env, "?", "255");
+	exit(255);
+}
 
-	c = 0;
+void	ft_exit(char **arguments, t_env_copy *env)
+{
+	int		flag;
+	char	*exit_code;
+
 	flag = valid_argument(arguments + 1);
 	printf("exit\n");
 	if (flag == 1)
-	{
-		stder("bash: exit: ", 2);
-		stder(arguments[1], 2);
-		stder(": numeric argument required\n", 2);
-		update_environment(env, "?", "255");
-		exit(255);
-	}
+		print_exiterr(arguments[1], env);
 	else if (flag == 0)
 	{
-		stder("bash: exit: too many arguments\n", 2);
+		ft_putstr_fd("bash: exit: too many arguments\n", 2);
 		update_environment(env, "?", "1");
-		return;
+		return ;
 	}
 	else if (flag == 2)
 	{
-		c = ft_atoi(arguments[1]);
-		char *exit_code = ft_itoa(c);
+		exit_code = ft_itoa(ft_atoi(arguments[1]));
 		update_environment(env, "?", exit_code);
 		free(exit_code);
-		exit(c);
+		exit(ft_atoi(arguments[1]));
 	}
 	else
 	{

@@ -57,14 +57,6 @@ char	*check_valid_path(char *path, char *cmd)
 	if (!sub_paths)
 		return (NULL);
 	i = 0;
-
-	if (ft_strchr(cmd, '/'))
-	{
-		if (stat(cmd, &checker) == 0 )
-			return (cmd);
-		return (NULL);
-	}
-
 	while (sub_paths[i])
 	{
 		temp = ft_strjoin(sub_paths[i], "/");
@@ -78,6 +70,6 @@ char	*check_valid_path(char *path, char *cmd)
 		// free(command_path), command_path = NULL;
 		i++;
 	}
-	return (NULL);
+	return (cmd);
 }
 

@@ -6,25 +6,25 @@
 /*   By: mmaarafi <mmaarafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 11:59:37 by mmaarafi          #+#    #+#             */
-/*   Updated: 2025/07/14 19:39:51 by mmaarafi         ###   ########.fr       */
+/*   Updated: 2025/07/14 12:07:50 by mmaarafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static void handle_overflow(char *str)
+static void	handle_overflow(char *str)
 {
-	stder("bash: exit: ", 2);
-	stder(str, 2);
-	stder(": numeric argument required\n", 2);
+	ft_putstr_fd("bash: exit: ", 2);
+	ft_putstr_fd(str, 2);
+	ft_putstr_fd(": numeric argument required\n", 2);
 	exit(255);
 }
 
-long long ft_atoi(char *str)
+long long	ft_atoi(char *str)
 {
-	long long result;
-	int sign;
-	char *ptr;
+	long long	result;
+	int			sign;
+	char		*ptr;
 
 	ptr = str;
 	sign = 1;

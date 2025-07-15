@@ -6,7 +6,7 @@
 /*   By: mmaarafi <mmaarafi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 12:11:32 by mmaarafi          #+#    #+#             */
-/*   Updated: 2025/07/14 17:00:12 by mmaarafi         ###   ########.fr       */
+/*   Updated: 2025/07/14 13:25:18 by mmaarafi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,11 @@ static void	*allocate_duplicate(const char *str, int count, char **strs)
 	int	single_qoute;
 	int	double_qoute;
 
-	single_qoute = ((i = 0, 0), (l = 0, 0), 
-			(k = 0, 0), (double_qoute = 0, 0), 0);
+	l = 0;
+	k = 0;
+	i = 0;
+	single_qoute = 0;
+	double_qoute = 0;
 	while (k < count)
 	{
 		if ((!single_qoute && !double_qoute) && inside_charset(str[i]))
